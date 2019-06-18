@@ -11,7 +11,7 @@ services:
       - 2181:2181
 
   hbase-master-local:
-    image: noteax/hbase-master-local:1.2.6
+    image: ifattakhov/hbase-local:2.1.2
     volumes:
       - ./data/hbase:/data
     ports:
@@ -21,11 +21,13 @@ services:
       - MASTER_HOSTNAME=hbase-master-local
       - ZOOKEEPER_QUORUM=zookeeper:2181
       - REGIONSERVERS=hbase-local-regionserver
+      - HBASE_ROLE=master
+    command: hbase-daemon.sh start master
     depends_on:
       - zookeeper
 
   hbase-regionserver-local:
-    image: noteax/hbase-regionserver-local:1.2.6
+    image: ifattakhov/hbase-local:2.1.2
     volumes:
       - ./data/hbase:/data
     ports:
@@ -34,5 +36,7 @@ services:
     environment:
       - REGIONSERVER_HOSTNAME=hbase-regionserver-local
       - ZOOKEEPER_QUORUM=zookeeper:2181
+      - HBASE_ROLE=regionserver
     depends_on:
       - zookeeper
+    command: hbase-daemon.sh start regionserver

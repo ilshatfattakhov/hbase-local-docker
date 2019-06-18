@@ -3,9 +3,7 @@ This is the simplified version of HBase for development purposes that uses the l
 
 # Supported tags and respective `Dockerfile` links
 
-* `1.2.6`[(1.2.6/Dockerfile)](https://github.com/noteax/hbase-standalone/blob/master/1.2.6/Dockerfile)
-* `1.3.0`[(1.3.0/Dockerfile)](https://github.com/noteax/hbase-standalone/blob/master/1.3.0/Dockerfile)
-* `1.3.1`, `latest` [(1.3.1/Dockerfile)](https://github.com/noteax/hbase-standalone/blob/master/1.3.1/Dockerfile)
+* `2.1.2`, `latest` [(2.1.2/Dockerfile)](https://github.com/ilshatfattakhov/hbase-local-docker/blob/master/2.1.2/Dockerfile)
 
 # What is Apache HBase?
 
@@ -23,7 +21,7 @@ Use Apache HBase™ when you need random, realtime read/write access to your Big
  ## Regionserver
   - REGIONSERVER_HOSTNAME - regionserver hostname advise, should match with container name
   - ZOOKEEPER_QUORUM - zookeeper quorum
-
+  - HBASE_ROLE - master/regionserver
 ## Example
 
 You could use preconfigured master/regionserver/zookeeper example:
