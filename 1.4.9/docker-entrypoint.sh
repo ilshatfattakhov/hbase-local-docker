@@ -20,15 +20,14 @@ echo "<property><name>hbase.cluster.distributed</name><value>true</value></prope
 echo "<property><name>hbase.zookeeper.quorum</name><value>$ZOOKEEPER_QUORUM</value></property>" >> $CONFIG
 echo "<property><name>hbase.$HBASE_ROLE.hostname</name><value>$HOSTNAME</value></property>" >> $CONFIG
 echo "<property><name>hbase.$HBASE_ROLE.port</name><value>$PORT</value></property>" >> $CONFIG
+echo "<property><name>zookeeper.znode.parent</name><value>$ZK_PARENT</value></property>" >> $CONFIG
 echo "</configuration>" >> $CONFIG
 
 cat $CONFIG
 
-# Generate the regionservers only if it doesn't exist
-if [ ! -f "conf/regionservers" ]; then
-    CONFIG="conf/regionservers"
-    echo $REGIONSERVERS | tr , '\n' >> $CONFIG
-fi
+# Generate the regionservers
+CONFIG="conf/regionservers"
+echo $REGIONSERVERS | tr , '\n' > $CONFIG
 
-echo "Running command "$@" & tail -f /dev/null"
-exec "$@"& tail -f /dev/null
+echo "Running command "$@
+exec "$@"

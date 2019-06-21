@@ -58,6 +58,7 @@ ENV REGIONSERVER_PORT=16030
 ENV REGIONSERVERS=regionserver1,regionserver2    
 ENV LD_LIBRARY_PATH=/hadoop-native:/usr/lib:/usr/local/lib
 ENV HBASE_ROLE=dummy
+ENV ZK_PARENT=/hbase
 
 VOLUME ["/data"]
 

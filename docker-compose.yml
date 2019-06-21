@@ -20,9 +20,9 @@ services:
     - backend
 
   hbase-master-dc1:
-    # restart: always
-    image: ifattakhov/hbase-local:1.4.9
-    hostname: "${HBASE_MASTER_HOST}"
+    restart: always
+    image: ifattakhov/hbase-local:2.1.2
+    hostname: "hbase-master-dc1"
     container_name: hbase-master-dc1
     volumes:
     - ./local-environment/data/hbase:/data:delegated
@@ -30,24 +30,23 @@ services:
     - 16000:16000
     - 16010:16010
     environment:
-    - HOSTNAME=${HBASE_MASTER_HOST}
+    - HOSTNAME=hbase-master-dc1
     - ZOOKEEPER_QUORUM=zookeeper:2181
-    - REGIONSERVERS=${HBASE_REGION_HOST}
     - HBASE_ROLE=master
+    - REGIONSERVERS=hbase-regionserver-dc1
     - PORT=16000
-    - HBASE_LOG_DIR=/data
-    command: hbase-daemon.sh start master
-    tty: true
-    stdin_open: true
+    - HBASE_LOG_DIR=/data/dc1
+    - ZK_PARENT=/hbase-dc1
+    command: hbase-daemon.sh foreground_start master
     depends_on:
     - zookeeper
     networks:
     - backend
 
-  hbase-regionserver-dc2:
-    # restart: always
-    image: ifattakhov/hbase-local:1.4.9
-    hostname: "${HBASE_REGION_HOST}"
+  hbase-regionserver-dc1:
+    restart: always
+    image: ifattakhov/hbase-local:2.1.2
+    hostname: "hbase-regionserver-dc1"
     container_name: hbase-regionserver-dc1
     volumes:
     - ./local-environment/data/hbase:/data:delegated
@@ -55,17 +54,69 @@ services:
     - 16020:16020
     - 16030:16030
     environment:
-    - HOSTNAME=${HBASE_REGION_HOST}
+    - HOSTNAME=hbase-regionserver-dc1
     - ZOOKEEPER_QUORUM=zookeeper:2181
-    - REGIONSERVERS=${HBASE_REGION_HOST}
     - HBASE_ROLE=regionserver
-    - PORT=16030
-    - HBASE_LOG_DIR=/data
-    command: hbase-daemon.sh start regionserver
+    - PORT=16020
+    - HBASE_LOG_DIR=/data/dc1
+    - ZK_PARENT=/hbase-dc1
+    command: hbase-daemon.sh foreground_start regionserver
     depends_on:
     - zookeeper
     networks:
     - backend
+
+  hbase-master-dc2:
+    restart: always
+    image: ifattakhov/hbase-local:2.1.2
+    hostname: "hbase-master-dc2"
+    container_name: hbase-master-dc2
+    volumes:
+    - ./local-environment/data/hbase:/data:delegated
+    ports:
+    - 26000:26000
+    - 26010:26010
+    environment:
+    - HOSTNAME=hbase-master-dc2
+    - ZOOKEEPER_QUORUM=zookeeper:2181
+    - REGIONSERVERS=hbase-regionserver-dc2-dc2
+    - HBASE_ROLE=master
+    - PORT=26000
+    - HBASE_LOG_DIR=/data/dc2
+    - ZK_PARENT=/hbase-dc2
+    command: hbase-daemon.sh foreground_start master
+    tty: true
+    stdin_open: true
+    depends_on:
+    - zookeeper
+    - hbase-master-dc1
+    networks:
+    - backend
+
+  hbase-regionserver-dc2:
+    restart: always
+    image: ifattakhov/hbase-local:2.1.2
+    hostname: "hbase-regionserver-dc2"
+    container_name: hbase-regionserver-dc2
+    volumes:
+    - ./local-environment/data/hbase:/data:delegated
+    ports:
+    - 26020:26020
+    - 26030:26030
+    environment:
+    - HOSTNAME=hbase-regionserver-dc2
+    - ZOOKEEPER_QUORUM=zookeeper:2181
+    - HBASE_ROLE=regionserver
+    - PORT=26020
+    - HBASE_LOG_DIR=/data/dc2
+    - ZK_PARENT=/hbase-dc2
+    command: hbase-daemon.sh foreground_start regionserver
+    depends_on:
+    - zookeeper
+    - hbase-master-dc1
+    networks:
+    - backend
+
 
 networks:
   frontend:
