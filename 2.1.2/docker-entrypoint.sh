@@ -2,7 +2,7 @@
 
 set -e
 
-echo "Starting hbase container with "$HBASE_ROLE
+echo "Starting hbase container with "$HBASE_ROLE" role"
 echo $ZOOKEEPER_QUORUM
 # Generate the config only if it doesn't exist
 if [ ! -f "conf/hbase-site.xml" ]; then
@@ -18,8 +18,8 @@ echo "<configuration>" >> $CONFIG
 echo "<property><name>hbase.rootdir</name><value>file://$HBASE_DATA_DIR</value></property>" >> $CONFIG
 echo "<property><name>hbase.cluster.distributed</name><value>true</value></property>" >> $CONFIG
 echo "<property><name>hbase.zookeeper.quorum</name><value>$ZOOKEEPER_QUORUM</value></property>" >> $CONFIG
-echo "<property><name>hbase.master.hostname</name><value>$MASTER_HOSTNAME</value></property>" >> $CONFIG
-echo "<property><name>hbase.master.port</name><value>$MASTER_PORT</value></property>" >> $CONFIG
+echo "<property><name>hbase.$HBASE_ROLE.hostname</name><value>$HOSTNAME</value></property>" >> $CONFIG
+echo "<property><name>hbase.$HBASE_ROLE.port</name><value>$PORT</value></property>" >> $CONFIG
 echo "</configuration>" >> $CONFIG
 
 cat $CONFIG
@@ -30,5 +30,5 @@ if [ ! -f "conf/regionservers" ]; then
     echo $REGIONSERVERS | tr , '\n' >> $CONFIG
 fi
 
-echo "Running command "$@
-exec "$@"
+echo "Running command "$@" & tail -f /dev/null"
+exec "$@"& tail -f /dev/null

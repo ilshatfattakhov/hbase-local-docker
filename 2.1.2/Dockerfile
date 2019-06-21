@@ -35,12 +35,12 @@ RUN set -euxo pipefail && \
 
 # Needed for HBase 2.0+ hbase-shell
 # asciidoctor solves 'NotImplementedError: fstat unimplemented unsupported or native support failed to load'
-# RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
-#    apk update && \
-#    apk add jruby && \
-#    apk add jruby-irb && \
-#    apk add asciidoctor && \
-#    echo exit | hbase shell
+ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
+    apk update && \
+    apk add jruby && \
+    apk add jruby-irb && \
+    apk add asciidoctor && \
+    echo exit | hbase shell
     # jruby-maven jruby-minitest jruby-rdoc jruby-rake jruby-testunit && \
 
 RUN set -euxo pipefail && \
@@ -60,8 +60,6 @@ ENV LD_LIBRARY_PATH=/hadoop-native:/usr/lib:/usr/local/lib
 ENV HBASE_ROLE=dummy
 
 VOLUME ["/data"]
-
-EXPOSE 16000 16010 16020 16030
 
 WORKDIR /hbase-$HBASE_VERSION
 
