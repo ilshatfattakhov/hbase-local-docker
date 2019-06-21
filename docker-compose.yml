@@ -3,40 +3,71 @@ version: '3'
 services:
 
   zookeeper:
+    restart: always
     image: zookeeper:3.4.10
+    hostname: zookeeper
+    container_name: zookeeper
     volumes:
-      - ./data/zookeeper/data:/data
-      - ./data/zookeeper/datalog:/datalog
+    - ./local-environment/data/zookeeper/data:/data:delegated
+    - ./local-environment/data/zookeeper/datalog:/datalog:delegated
     ports:
-      - 2181:2181
-
-  hbase-master-local:
-    image: ifattakhov/hbase-local:2.1.2
-    volumes:
-      - ./data/hbase:/data
-    ports:
-      - 16000:16000
-      - 16010:16010
+    - 2181:2181
     environment:
-      - MASTER_HOSTNAME=hbase-master-local
-      - ZOOKEEPER_QUORUM=zookeeper:2181
-      - REGIONSERVERS=hbase-local-regionserver
-      - HBASE_ROLE=master
+    - ZOO_MAX_CLIENT_CNXNS=0
+    - ZOO_TICK_TIME=10000
+    - ZOO_STANDALONE_ENABLED=true
+    networks:
+    - backend
+
+  hbase-master-dc1:
+    # restart: always
+    image: ifattakhov/hbase-local:1.4.9
+    hostname: "${HBASE_MASTER_HOST}"
+    container_name: hbase-master-dc1
+    volumes:
+    - ./local-environment/data/hbase:/data:delegated
+    ports:
+    - 16000:16000
+    - 16010:16010
+    environment:
+    - HOSTNAME=${HBASE_MASTER_HOST}
+    - ZOOKEEPER_QUORUM=zookeeper:2181
+    - REGIONSERVERS=${HBASE_REGION_HOST}
+    - HBASE_ROLE=master
+    - PORT=16000
+    - HBASE_LOG_DIR=/data
     command: hbase-daemon.sh start master
+    tty: true
+    stdin_open: true
     depends_on:
-      - zookeeper
+    - zookeeper
+    networks:
+    - backend
 
-  hbase-regionserver-local:
-    image: ifattakhov/hbase-local:2.1.2
+  hbase-regionserver-dc2:
+    # restart: always
+    image: ifattakhov/hbase-local:1.4.9
+    hostname: "${HBASE_REGION_HOST}"
+    container_name: hbase-regionserver-dc1
     volumes:
-      - ./data/hbase:/data
+    - ./local-environment/data/hbase:/data:delegated
     ports:
-      - 16020:16020
-      - 16030:16030
+    - 16020:16020
+    - 16030:16030
     environment:
-      - REGIONSERVER_HOSTNAME=hbase-regionserver-local
-      - ZOOKEEPER_QUORUM=zookeeper:2181
-      - HBASE_ROLE=regionserver
-    depends_on:
-      - zookeeper
+    - HOSTNAME=${HBASE_REGION_HOST}
+    - ZOOKEEPER_QUORUM=zookeeper:2181
+    - REGIONSERVERS=${HBASE_REGION_HOST}
+    - HBASE_ROLE=regionserver
+    - PORT=16030
+    - HBASE_LOG_DIR=/data
     command: hbase-daemon.sh start regionserver
+    depends_on:
+    - zookeeper
+    networks:
+    - backend
+
+networks:
+  frontend:
+  backend:
+  portainer:
