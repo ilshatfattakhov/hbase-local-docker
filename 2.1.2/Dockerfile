@@ -18,7 +18,7 @@ RUN set -euxo pipefail && \
     apk add --no-cache bash openjdk8-jre-base
 
 RUN set -euxo pipefail && \
-    apk add --no-cache wget tar && \
+    apk add --no-cache wget tar libexecinfo libexecinfo-dev snappy && \
     url="http://www.apache.org/dyn/closer.lua?filename=hbase/$HBASE_VERSION/hbase-$HBASE_VERSION-bin.tar.gz&action=download"; \
     url_archive="http://archive.apache.org/dist/hbase/$HBASE_VERSION/hbase-$HBASE_VERSION-bin.tar.gz"; \
     wget -t 10 --max-redirect 1 --retry-connrefused -O "hbase-$HBASE_VERSION-bin.tar.gz" "$url" || \

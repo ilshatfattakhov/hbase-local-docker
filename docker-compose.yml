@@ -25,7 +25,7 @@ services:
     hostname: "hbase-master-dc1"
     container_name: hbase-master-dc1
     volumes:
-    - ./local-environment/data/hbase:/data:delegated
+    - ./local-environment/data/hbase/dc1:/data:delegated
     ports:
     - 16000:16000
     - 16010:16010
@@ -49,7 +49,7 @@ services:
     hostname: "hbase-regionserver-dc1"
     container_name: hbase-regionserver-dc1
     volumes:
-    - ./local-environment/data/hbase:/data:delegated
+    - ./local-environment/data/hbase/dc1:/data:delegated
     ports:
     - 16020:16020
     - 16030:16030
@@ -72,16 +72,16 @@ services:
     hostname: "hbase-master-dc2"
     container_name: hbase-master-dc2
     volumes:
-    - ./local-environment/data/hbase:/data:delegated
+    - ./local-environment/data/hbase/dc2:/data:delegated
     ports:
-    - 26000:26000
-    - 26010:26010
+    - 26000:16000
+    - 26010:16010
     environment:
     - HOSTNAME=hbase-master-dc2
     - ZOOKEEPER_QUORUM=zookeeper:2181
     - REGIONSERVERS=hbase-regionserver-dc2-dc2
     - HBASE_ROLE=master
-    - PORT=26000
+    - PORT=16000
     - HBASE_LOG_DIR=/data/dc2
     - ZK_PARENT=/hbase-dc2
     command: hbase-daemon.sh foreground_start master
@@ -99,15 +99,15 @@ services:
     hostname: "hbase-regionserver-dc2"
     container_name: hbase-regionserver-dc2
     volumes:
-    - ./local-environment/data/hbase:/data:delegated
+    - ./local-environment/data/hbase/dc2:/data:delegated
     ports:
-    - 26020:26020
-    - 26030:26030
+    - 26020:16020
+    - 26030:16030
     environment:
     - HOSTNAME=hbase-regionserver-dc2
     - ZOOKEEPER_QUORUM=zookeeper:2181
     - HBASE_ROLE=regionserver
-    - PORT=26020
+    - PORT=16020
     - HBASE_LOG_DIR=/data/dc2
     - ZK_PARENT=/hbase-dc2
     command: hbase-daemon.sh foreground_start regionserver
